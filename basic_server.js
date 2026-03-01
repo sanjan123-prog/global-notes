@@ -1,51 +1,29 @@
-require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
+const express=require('express');
+const mongoose=require('mongoose');
+const cors=require('cors');
 
-const app = express();
+const app=express();
 
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 
-// ----------------- MONGOOSE MODEL -----------------
-const NoteSchema = new mongoose.Schema({
-  text: String
+mongoose.connect("mongodb+srv://chinthalasanjanreddy_db_user:o6HVrvXvGlQx5nZN@cluster0.nihtjlr.mongodb.net/?appName=Cluster0");
+
+const noteschema = new mongoose.Schema({
+    text:String
 });
 
-const Note = mongoose.model("Note", NoteSchema);
+const note=new mongoose.model("Note",noteschema);
 
-// ----------------- ROUTES -----------------
-
-// Test
-app.get("/", (req, res) => {
-  res.send("Global Notes API Running");
+app.post("/add",async(req,res)=>{
+    const Note = new note({text:req.body.text});
+    await note.save();
+    res.json(note);
 });
 
-// Add note
-app.post("/add", async (req, res) => {
-  const { text } = req.body;
-
-  const newNote = new Note({ text });
-  await newNote.save();
-
-  res.json({ message: "Note saved" });
+app.get("/notes",async(req,res)=>{
+    const notes= await note.find();
+    res.json(notes);
 });
 
-// Get notes
-app.get("/notes", async (req, res) => {
-  const notes = await Note.find();
-  res.json(notes);
-});
-
-// ----------------- CONNECT DB -----------------
-mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-  console.log("MongoDB Connected");
-
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-})
-.catch(err => console.log(err));
+app.listen(3000,()=>console.log("Server running"));
