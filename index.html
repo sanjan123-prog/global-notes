@@ -5,7 +5,7 @@
     <input id="note" />
     <button onclick="addNote()">Add</button>
 <script>
-    const API="your api url";
+    const API="https://global-notes-backend.onrender.com";
     async function addNote(){
         const text=document.getElementById("note").value;
         await fetch(API+"/add",{
